@@ -3,21 +3,22 @@ package com.poc.springframework6.bootstrap;
 
 import com.poc.springframework6.domain.Author;
 import com.poc.springframework6.domain.Book;
+import com.poc.springframework6.domain.Publisher;
 import com.poc.springframework6.repositories.AuthorRepository;
 import com.poc.springframework6.repositories.BookRepository;
+import com.poc.springframework6.repositories.PublisherRepository;
+import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class BootstrapData implements CommandLineRunner {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
 
-    public BootstrapData(AuthorRepository authorRepository, BookRepository bookRepository) {
-        this.authorRepository = authorRepository;
-        this.bookRepository = bookRepository;
-    }
+    private final PublisherRepository publisherRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -46,12 +47,26 @@ public class BootstrapData implements CommandLineRunner {
         ericSaved.getBooks().add(dddSaved);
         rodSaved.getBooks().add(noEJBSaved);
 
+
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName("Test");
+        publisher.setZip("D01");
+        publisher.setCity("Dublin");
+        publisher.setState("Leinster");
+        Publisher savedPublisher = publisherRepository.save(publisher);
+
+        dddSaved.setPublisher(savedPublisher);
+        noEJB.setPublisher(savedPublisher);
+
         authorRepository.save(ericSaved);
         authorRepository.save(rodSaved);
+        bookRepository.save(dddSaved);
+        bookRepository.save(noEJBSaved);
 
         System.out.println("In Bootstrap");
         System.out.println("Author Count: " + authorRepository.count());
         System.out.println("Book Count: " + bookRepository.count());
+        System.out.println("Publisher Count: " + publisherRepository.count());
 
 
     }
